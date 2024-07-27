@@ -3,9 +3,7 @@ import PageMain from './pages/PageMain';
 import PageReport from './pages/PageReport';
 import {Navigation} from './components/Navigation';
 import {BrowserRouter,Routes,Route,Navigate} from 'react-router-dom'
-
 function App() {
- 
   return (
     <BrowserRouter>
       <Routes>

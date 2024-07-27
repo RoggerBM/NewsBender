@@ -22,14 +22,14 @@ export function AcordionsCampana({campana="campana",descripcion = "Es una descri
   console.log("isOpen:", isOpen);
   return (
     <div>
-        <Accordion>
-          <AccordionHeader className="text-sm font-medium" onClick={onClick}>
-            <h2 className="text-red-400">
+        <Accordion className='bg-emerald-800 max-w-full dark:bg-emerald-950 border-transparent	dark:border-transparent'>
+          <AccordionHeader className="text-sm font-medium" onClick={onClick} >
+            <h2 className="text-white font-sans">
             {campana}
             </h2>
           </AccordionHeader>
           {isOpen && (
-          <AccordionBody className="leading-6">
+          <AccordionBody className="leading-6 ">
             {subcampanasList}
           </AccordionBody>
           )}

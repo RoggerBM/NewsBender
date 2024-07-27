@@ -101,7 +101,7 @@ const config: Config = {
       },
     },
   },
-  darkMode: 'media',
+  darkMode: 'class',
   safelist: [
     {
       pattern:

@@ -11,7 +11,7 @@ export function ListSubcampana({nombre='',descripcion=''}) {
       <List className="mt-2">
           <ListItem>
           <Link to = "/campanas">
-            <span className="text-white">
+            <span className="text-white text-xs	font-sans	">
             {nombre} 
             </span>
           </Link>

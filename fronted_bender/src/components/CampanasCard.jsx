@@ -3,7 +3,7 @@ import { Card, Divider } from '@tremor/react';
 
 function CampanasCard({title = "TITULO",description = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam ex accusantium voluptate repellendus magnam sit accusamus, ab, atque impedit voluptates maiores magni molestias? At numquam incidunt, ipsa natus voluptates voluptatem?",imagen=""}) {
   return (
-    <Card className="mx-auto max-w-xs card">
+    <Card className="mx-auto max-w-xs card bg-slate-200	dark:bg-slate-500	dark:text-white">
         <h2 className="text-center text-slate-400 text-white">{title}</h2>
         <Divider className="border-t-2 border-red-500"></Divider>
         <p className="text-tremor-default text-tremor-content text-white">{description}</p>
