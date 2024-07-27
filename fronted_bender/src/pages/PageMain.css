@@ -1,0 +1,15 @@
+.main{
+    padding: 5px;
+  }
+  .contenido{
+    display: flex;
+    gap:5px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .titulo-campanas {
+    font-size: 50px;
+    font-family: sans-serif;
+    text-align: center;
+    margin-bottom: 2px;
+  }
