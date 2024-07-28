@@ -8,7 +8,7 @@ import {ListSubcampana} from './ListSubcampana'
 import { getSubcampanasByCampana } from '../../api/campanas.api';
 import { useEffect, useState } from 'react';
 
-export function AcordionsCampana({campana="campana",descripcion = "Es una descripcion", campanaId,isOpen,onClick}) {
+export function AcordionsCampana({campana="campana",imagen = "Es una descripcion", campanaId,isOpen,onClick}) {
   const [subcampanas, setSubcampanas] = useState([]);
   useEffect(() => {
     async function loadSubcampanas() {
@@ -20,19 +20,27 @@ export function AcordionsCampana({campana="campana",descripcion = "Es una descri
     return <ListSubcampana key = {v.id} nombre={v.nombre} descripcion = {v.descripcion}/>
   })
   console.log("isOpen:", isOpen);
+  const [isAccordionOpen, setIsAccordionOpen] = useState(isOpen);
+  useEffect(() => {
+    setIsAccordionOpen(isOpen);
+  }, [isOpen]);
   return (
     <div>
-        <Accordion className='bg-emerald-800 max-w-full dark:bg-emerald-950 border-transparent	dark:border-transparent'>
+        <Accordion className='bg-white max-w-full dark:bg-slate-800 border-transparent	dark:border-transparent'
+        defaultOpen={isAccordionOpen}>
           <AccordionHeader className="text-sm font-medium" onClick={onClick} >
-            <h2 className="text-white font-sans">
-            {campana}
-            </h2>
+          <div className="flex items-center space-x-4">
+          <img className="w-8 h-8 rounded-md" src={imagen} alt={`${campana} img`} />
+          <h2 className="text-black dark:text-white font-sans">{campana}</h2>
+        </div>
+            
           </AccordionHeader>
           {isOpen && (
           <AccordionBody className="leading-6 ">
             {subcampanasList}
           </AccordionBody>
           )}
+          
     </Accordion>
   </div>
   )

@@ -1,9 +1,13 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
+import {Body} from '../components/Body'
 function PageReport() {
   return (
-    <div className='bg-slate-100 dark:bg-slate-950				'>
+    <div className='relative bg-[#D5D5D5] dark:bg-slate-950 w-full h-screen'>
       <Navbar/>
+      <Body/>
+
+
     </div>
   )
 }

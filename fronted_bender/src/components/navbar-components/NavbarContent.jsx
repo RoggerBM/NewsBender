@@ -20,11 +20,12 @@ export function NavbarContent() {
     const handleAccordionClick = (id) => {
       setActiveAccordion((prevId) => (prevId === id ? null : id));
     };
+    console.log("ID",activeAccordion);
     const acordionList = campains.map((v) => (
       <AcordionsCampana
         key={v.id}
         campana={v.nombre}
-        descripcion={v.descripcion}
+        imagen={v.imagen}
         campanaId={v.id}
         isOpen={activeAccordion === v.id}
         onClick={() => handleAccordionClick(v.id)}
@@ -32,7 +33,7 @@ export function NavbarContent() {
     ));
 
   return (
-      <AccordionList className="max-w-full	">
+      <AccordionList className="max-w-full">
         {acordionList}
       </AccordionList>
   )
