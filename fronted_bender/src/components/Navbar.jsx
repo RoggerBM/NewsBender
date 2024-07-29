@@ -8,17 +8,15 @@ import { Divider } from '@tremor/react';
 
 function Navbar() {
   return (
-    <div className='bg-white dark:bg-slate-800	 absolute left-0 top-0 w-72 h-screen p-2 flex flex-col gap-2 px-3 overflow-y-auto custom-scrollbar'>
-    <NavbarHeader/>
-    <div>
-      <hr className="border-t border-gray-300 dark:border-white" />
+    <div className='bg-white dark:bg-slate-800	 absolute left-0 top-0 w-72 h-screen p-2 flex flex-col gap-2 px-3 overflow-y-auto custom-scrollbar shadow-md '>
+    <NavbarHeader className="cursor-pointer"/>
+    <div className=''>
+      <hr className="border-t border-gray-300 dark:border-gray-500 " />
     </div>
     <div className="flex-grow overflow-y-auto custom-scrollbar">
       <NavbarContent className="flex flex-col justify-center items-center space-y-4" />
     </div>
-    <div>
-      <hr className="border-t border-gray-300 dark:border-white" />
-    </div>
+
 
     <NavbarFooter />
   </div>

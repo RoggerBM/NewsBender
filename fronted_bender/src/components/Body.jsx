@@ -2,9 +2,9 @@ import React from 'react';
 
 export function Body() {
   return (
-    <div className="absolute left-72 top-0 h-screen p-2 w-max max-w-full	">
-        <div className="content bg-black text-white">
-              Hola
+    <div className="p-4 h-full">
+        <div className="bg-slate-400 rounded-md max-h-max">
+            <h2>Hola soy el cuerpo del dashboard</h2>
         </div>
     </div>
   )

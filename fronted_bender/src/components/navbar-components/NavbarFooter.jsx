@@ -16,7 +16,7 @@ export function NavbarFooter() {
        }
   },[theme])
   return (
-      <div className="mx-auto max-w-full	border-transparent	dark:border-transparent h-[4rem] flex justify-center items-center">
+      <div className=" mx-auto max-w-full	border-transparent	dark:border-transparent h-[4rem] flex items-center justify-center bottom-5">
         <div className="h-auto w-auto flex gap-4 justify-center items-center dark:text-white">
           <Button className='size-8' onClick={handleChangeTheme}>
               <Icon

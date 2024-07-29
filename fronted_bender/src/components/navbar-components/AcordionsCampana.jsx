@@ -35,11 +35,11 @@ export function AcordionsCampana({campana="campana",imagen = "Es una descripcion
         </div>
             
           </AccordionHeader>
-          {isOpen && (
+          
           <AccordionBody className="leading-6 ">
             {subcampanasList}
           </AccordionBody>
-          )}
+          
           
     </Accordion>
   </div>
