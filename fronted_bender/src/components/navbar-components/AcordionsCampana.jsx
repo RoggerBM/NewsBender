@@ -19,7 +19,6 @@ export function AcordionsCampana({campana="campana",imagen = "Es una descripcion
   const subcampanasList = subcampanas.map(v=>{
     return <ListSubcampana key = {v.id} nombre={v.nombre} descripcion = {v.descripcion}/>
   })
-  console.log("isOpen:", isOpen);
   const [isAccordionOpen, setIsAccordionOpen] = useState(isOpen);
   useEffect(() => {
     setIsAccordionOpen(isOpen);

@@ -20,7 +20,6 @@ export function NavbarContent() {
     const handleAccordionClick = (id) => {
       setActiveAccordion((prevId) => (prevId === id ? null : id));
     };
-    console.log("ID",activeAccordion);
     const acordionList = campains.map((v) => (
       <AcordionsCampana
         key={v.id}

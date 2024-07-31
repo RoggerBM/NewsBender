@@ -15,7 +15,8 @@ class Subcampana(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     tipo = models.CharField(max_length=200)
     activo = models.BooleanField(default=True)
-
+    meta = models.CharField(max_length=200,blank=True, null=True)
+    monto_meta = models.FloatField(default=0)
     def __str__(self):
         return self.nombre
 
