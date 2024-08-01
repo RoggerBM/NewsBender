@@ -36,3 +36,8 @@ class SBPPPDesembolsosSerializer(serializers.ModelSerializer):
     class Meta:
         model = SBPPPDesembolsos
         fields = '__all__'
+        
+class MetricasSerializer(serializers.Serializer):
+    total_tarjetas = serializers.IntegerField()
+    meta = serializers.FloatField()
+    tipo = serializers.CharField(max_length=200)
