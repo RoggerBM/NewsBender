@@ -12,26 +12,46 @@ export function MetricBySubcampana({
 
   useEffect(() => {
     async function fetchMetricas() {
-      const response = await getMetricas(nombre, campanaId, subcampana_id,date_i,date_e);
+      const response = await getMetricas(
+        nombre,
+        campanaId,
+        subcampana_id,
+        date_i,
+        date_e
+      );
       setMetricas(response.data);
     }
     fetchMetricas();
-  }, [nombre, campanaId, subcampana_id]);
+  }, [nombre, campanaId, subcampana_id, date_i, date_e]);
 
   return (
     <div className="flex flex-col">
-        <h2 className="text-xs font-semibold mb-2">{nombre}</h2>
-        <div className="flex gap-4">
-          {metricas ? (
-            <SubMetricCampana
-              title={metricas.tipo}
-              value={metricas.total_tarjetas}
-              val1={metricas.meta}
-            />
-          ) : (
-            <div>No data available</div>
-          )}
+      <h2 className="text-xs font-semibold mb-2">{nombre}</h2>
+      <div className="flex gap-4">
+        {metricas ? (
+          <SubMetricCampana
+            title={metricas.tipo}
+            value={metricas.total_tarjetas}
+            val1={metricas.val1}
+            val2={metricas.val2}
+            meta_day={metricas.meta_day}
+            graph={true}
+          />
+        ) : (
+          <div>No data available</div>
+        )}
+        <SubMetricCampana
+          title="Meta presupuesto"
+          value={metricas.total_tarjetas}
+          val1={metricas.val1}
+          val2={metricas.val2}
+          meta_day={metricas.meta_day}
+          meta={metricas.meta}
+          percent = {metricas.percent}
+          graph={false}
+        />
       </div>
+      
     </div>
   );
 }

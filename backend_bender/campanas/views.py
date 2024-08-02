@@ -5,7 +5,23 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils.dateparse import parse_datetime
 from datetime import timedelta
+import calendar
+from django.db.models import Sum
 
+def format_number(number):
+    if abs(number) >= 1_000_000:
+        return f"{number / 1_000_000:.1f}M"
+    elif abs(number) >= 1_000:
+        return f"{number / 1_000:.1f}k"
+    else:
+        return str(number)
+def format_number_by_value(number):
+    if isinstance(number, int):
+        return f"{number:,}"
+    elif isinstance(number, float):
+        return f"{number:,.2f}"
+    else:
+        return str(number)
 class CampanaViewSet(viewsets.ModelViewSet):
     queryset = Campana.objects.all()
     serializer_class = CampanaSerializer
@@ -49,6 +65,7 @@ class MetricasViewSet(APIView):
     model_map = {
             'BBVA-TLM': BBVATLMFormalizadas,
             'BBVA-WEB': BBVAWebFormalizadas,
+            'BBVA-PP': BBVAPPDesembolsos,
             'SBP-PP': SBPPPDesembolsos,
             'SBP-TLM': SBPTLMAprobadas,
 
@@ -81,17 +98,44 @@ class MetricasViewSet(APIView):
             queryset = queryset.filter(subcampaña_id=subcampana_id)
         print(f"Queryset SQL: {queryset.query}")
 
-        total_tarjetas = queryset.count()
+        
         subcampana = Subcampana.objects.get(id=subcampana_id) if subcampana_id else None
         subcampana_data = {
             'meta': subcampana.meta if subcampana else None,
             'monto_meta': subcampana.monto_meta if subcampana else None,
         }
         
+        if subcampana_data['meta'] == 'mount':
+            total_tarjetas = queryset.aggregate(Sum('monto_desembolso'))['monto_desembolso__sum'] or 0
+        else:
+            total_tarjetas = queryset.count()
+
+        month_days = calendar.monthrange(end_date.year, end_date.month)[1]
+        print("DIAS DEL MES SELECCIONADO:",month_days)
+        meta_per_day = subcampana_data["monto_meta"]/month_days
+        dia = end_date.day
+        print("DAY SELECTED:", dia)
+        meta_day = dia * round(meta_per_day)
+        print("META DEL DIA",meta_day)
+        val1 = total_tarjetas - meta_day
+        print("VALOR 1: ",val1)
+        val2 =((total_tarjetas/meta_day) -1) * 100
+        val2 = round(val2,2)
+        percent = (total_tarjetas/subcampana_data['monto_meta'])*100
+        percent = round(percent,2)
+        formatted_tarjet = format_number_by_value(total_tarjetas)
+        formatted_v_day = format_number_by_value(meta_day)
+        formatted_val1 = format_number(val1)
         data = {
-            'total_tarjetas':total_tarjetas,
+            'total_tarjetas':formatted_tarjet,
             'meta': subcampana_data["monto_meta"],
-            'tipo': subcampana_data["meta"]
+            'tipo': subcampana_data["meta"],
+            'dia': dia,
+            'meta_per_day': meta_per_day,
+            'meta_day' : formatted_v_day,
+            'val1' : formatted_val1,
+            'val2': val2,
+            'percent': percent
         }
         serializer = MetricasSerializer(data)
         return Response(serializer.data)
