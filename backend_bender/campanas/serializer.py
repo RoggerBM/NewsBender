@@ -39,7 +39,7 @@ class SBPPPDesembolsosSerializer(serializers.ModelSerializer):
         
 class MetricasSerializer(serializers.Serializer):
     total_tarjetas = serializers.CharField()
-    meta = serializers.FloatField()
+    meta = serializers.CharField()
     tipo = serializers.CharField(max_length=200)
     #variables para validar
     dia = serializers.IntegerField()
@@ -48,4 +48,9 @@ class MetricasSerializer(serializers.Serializer):
     val1 = serializers.CharField()
     val2 = serializers.FloatField()
     percent = serializers.FloatField()
-    
+    total = serializers.FloatField()
+    titulo = serializers.CharField()
+
+class PeriodoMetricasSerializer(serializers.Serializer):
+    periodo = serializers.CharField()
+    total_tarjetas = serializers.FloatField()

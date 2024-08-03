@@ -30,7 +30,8 @@ export function MetricBySubcampana({
       <div className="flex gap-4">
         {metricas ? (
           <SubMetricCampana
-            title={metricas.tipo}
+            title={metricas.titulo}
+            tipo={metricas.tipo}
             value={metricas.total_tarjetas}
             val1={metricas.val1}
             val2={metricas.val2}
@@ -42,12 +43,12 @@ export function MetricBySubcampana({
         )}
         <SubMetricCampana
           title="Meta presupuesto"
+          tipo={metricas.tipo}
           value={metricas.total_tarjetas}
-          val1={metricas.val1}
-          val2={metricas.val2}
           meta_day={metricas.meta_day}
           meta={metricas.meta}
           percent = {metricas.percent}
+          total={metricas.total}
           graph={false}
         />
       </div>

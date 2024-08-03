@@ -18,3 +18,16 @@ export const getMetricas = (tabla, campanaId, subcampanaId,startDate, endDate) =
     });
   
 };
+
+export const getPeriodos = (tabla, subcampanaId) => {
+    const params = {
+        tabla: tabla,
+        subcampana: subcampanaId
+    };
+
+    console.log('Request Parameters for Periodos:', params);
+
+    return axios.get('http://localhost:8000/campanas/api/metricas/periodo/', {
+        params: params,
+    });
+};

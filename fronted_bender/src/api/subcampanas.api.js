@@ -9,3 +9,6 @@ export const getSubcampanasByCampana = (campanaId) => {
         }
     });
 }
+export const getSubcampanaById = (subcampanaId) => {
+    return axios.get(`http://localhost:8000/campanas/api/subcampana/${subcampanaId}/`);
+}

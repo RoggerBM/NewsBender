@@ -7,6 +7,7 @@ import {
 import {ListSubcampana} from './ListSubcampana'
 import { getSubcampanasByCampana } from '../../api/campanas.api';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom'
 
 export function AcordionsCampana({campana="campana",imagen = "Es una descripcion", campanaId,isOpen,onClick}) {
   const [subcampanas, setSubcampanas] = useState([]);
@@ -17,7 +18,7 @@ export function AcordionsCampana({campana="campana",imagen = "Es una descripcion
     }loadSubcampanas();
   }, [campanaId]);
   const subcampanasList = subcampanas.map(v=>{
-    return <ListSubcampana key = {v.id} nombre={v.nombre} descripcion = {v.descripcion}/>
+    return <Link to={`/reporte/subcampana/${v.id}`} key={v.id}><ListSubcampana key = {v.id} nombre={v.nombre} descripcion = {v.descripcion}/></Link>
   })
   const [isAccordionOpen, setIsAccordionOpen] = useState(isOpen);
   useEffect(() => {

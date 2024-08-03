@@ -1,6 +1,8 @@
 import React from "react";
-import { ProgressCircle } from "@tremor/react";
+import { ProgressCircle, Badge, BadgeDelta } from "@tremor/react";
 import { RiArrowUpCircleLine, RiArrowDownCircleLine } from "@remixicon/react";
+import { Legend } from "@tremor/react";
+
 export function CircleByMetric({
   percent = 200,
   value_min = "0.0",
@@ -9,8 +11,7 @@ export function CircleByMetric({
   const isNegative = parseFloat(percent) < 0 ? true : false;
 
   return (
-    <div>
-      <div className="flex justify-start space-x-5 items-center">
+      <div className="flex flex-col gap-1">
         <ProgressCircle
           value={percent}
           size="md"
@@ -20,19 +21,22 @@ export function CircleByMetric({
             {percent}%
           </span>
         </ProgressCircle>
-        <div>
-          <div className="flex gap-2 justify-center">
-            {isNegative ? (
-              <RiArrowDownCircleLine color="red" />
-            ) : (
-              <RiArrowUpCircleLine color="lime" />
-            )}
-            <p className="font-medium text-sm flex items-center gap-1">
-              {value_min} / {value_max} ({percent}%)
-            </p>
+        <div className="flex flex-col justify-center items-center gap-1">
+          <div className="flex text-xs font-semibold gap-1">
+            <BadgeDelta
+              deltaType={isNegative ? "decrease" : "increase"}
+              isIncreasePositive={true}
+            >
+              {value_min}
+            </BadgeDelta>
+            <Badge>{value_max}</Badge>
           </div>
+          <Legend
+            className="mt-1"
+            categories={["Valor del día", "Meta del día"]}
+            colors={isNegative ? ["rose", "blue"] : ["emerald", "blue"]}
+          />
         </div>
       </div>
-    </div>
   );
 }

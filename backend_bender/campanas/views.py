@@ -1,12 +1,12 @@
 from rest_framework import viewsets,generics
 from .models import Campana, Subcampana, BBVATLMFormalizadas,BBVAWebFormalizadas,BBVAPPDesembolsos,SBPTLMAprobadas,SBPPPDesembolsos
-from .serializer import CampanaSerializer,SubcampanaSerializer,BBVATLMFormalizadasSerializer,BBVAWebFormalizadasSerializer,BBVAPPDesembolsosSerializer,SBPTLMAprobadasSerializer,SBPPPDesembolsosSerializer,MetricasSerializer
+from .serializer import CampanaSerializer,SubcampanaSerializer,BBVATLMFormalizadasSerializer,BBVAWebFormalizadasSerializer,BBVAPPDesembolsosSerializer,SBPTLMAprobadasSerializer,SBPPPDesembolsosSerializer,MetricasSerializer,PeriodoMetricasSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils.dateparse import parse_datetime
 from datetime import timedelta
 import calendar
-from django.db.models import Sum
+from django.db.models import Sum,Count
 
 def format_number(number):
     if abs(number) >= 1_000_000:
@@ -107,8 +107,10 @@ class MetricasViewSet(APIView):
         
         if subcampana_data['meta'] == 'mount':
             total_tarjetas = queryset.aggregate(Sum('monto_desembolso'))['monto_desembolso__sum'] or 0
+            titulo = "Monto Desembolsado"
         else:
             total_tarjetas = queryset.count()
+            titulo = "Tarjetas Formalizadas"
 
         month_days = calendar.monthrange(end_date.year, end_date.month)[1]
         print("DIAS DEL MES SELECCIONADO:",month_days)
@@ -126,16 +128,69 @@ class MetricasViewSet(APIView):
         formatted_tarjet = format_number_by_value(total_tarjetas)
         formatted_v_day = format_number_by_value(meta_day)
         formatted_val1 = format_number(val1)
+        formatted_meta = format_number_by_value(subcampana_data["monto_meta"])
         data = {
             'total_tarjetas':formatted_tarjet,
-            'meta': subcampana_data["monto_meta"],
+            'meta': formatted_meta,
             'tipo': subcampana_data["meta"],
             'dia': dia,
             'meta_per_day': meta_per_day,
             'meta_day' : formatted_v_day,
             'val1' : formatted_val1,
             'val2': val2,
-            'percent': percent
+            'percent': percent,
+            'total':total_tarjetas,
+            'titulo':titulo
         }
         serializer = MetricasSerializer(data)
+        return Response(serializer.data)
+    
+class PeriodoMetricasViewSet(APIView):
+    model_map = {
+        'BBVA-TLM': BBVATLMFormalizadas,
+        'BBVA-WEB': BBVAWebFormalizadas,
+        'BBVA-PP': BBVAPPDesembolsos,
+        'SBP-PP': SBPPPDesembolsos,
+        'SBP-TLM': SBPTLMAprobadas,
+    }
+
+    def get(self, request, *args, **kwargs):
+        tabla = request.query_params.get('tabla', None)
+
+        subcampana_id = request.query_params.get('subcampana', None)
+
+        if tabla not in self.model_map:
+            return Response({'error': 'TABLE NOT FOUND'}, status=400)
+        model = self.model_map[tabla]
+
+        queryset = model.objects.all()
+
+        if subcampana_id:
+            queryset = queryset.filter(subcampaña_id=subcampana_id)
+
+        subcampana = Subcampana.objects.get(id=subcampana_id) if subcampana_id else None
+        subcampana_data = {
+            'meta': subcampana.meta if subcampana else None,
+            'monto_meta': subcampana.monto_meta if subcampana else None,
+        }
+
+        if subcampana_data['meta'] == 'mount':
+            grouped_data = queryset.values('periodo').annotate(
+                total_tarjetas=Sum('monto_desembolso')
+            ).order_by('periodo')
+        else:
+            grouped_data = queryset.values('periodo').annotate(
+                total_tarjetas=Count('id')
+            ).order_by('periodo')
+
+        results = []
+        for data in grouped_data:
+            periodo = data['periodo']
+            total_tarjetas = round(data['total_tarjetas'] or 0, 2)
+            results.append({
+                'periodo': periodo,
+                'total_tarjetas': total_tarjetas
+            })
+
+        serializer = PeriodoMetricasSerializer(results, many=True)
         return Response(serializer.data)

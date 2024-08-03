@@ -29,7 +29,7 @@ function PageReport() {
           />
         </div>
         <Header />
-        <div className="p-4 h-full">
+        <div className="p-4 h-full bg-white dark:bg-slate-950">
           <div className="rounded-md max-h-max">
             <Outlet />
           </div>
