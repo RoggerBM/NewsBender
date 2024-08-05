@@ -4,9 +4,11 @@ from .serializer import CampanaSerializer,SubcampanaSerializer,BBVATLMFormalizad
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils.dateparse import parse_datetime
-from datetime import timedelta
+from datetime import timedelta,datetime
 import calendar
 from django.db.models import Sum,Count
+from django.http import JsonResponse
+from dateutil.relativedelta import relativedelta
 
 def format_number(number):
     if abs(number) >= 1_000_000:
@@ -194,3 +196,144 @@ class PeriodoMetricasViewSet(APIView):
 
         serializer = PeriodoMetricasSerializer(results, many=True)
         return Response(serializer.data)
+    
+class PeriodsViewSet(APIView):
+    model_map = {
+        'BBVA-TLM': BBVATLMFormalizadas,
+        'BBVA-WEB': BBVAWebFormalizadas,
+        'BBVA-PP': BBVAPPDesembolsos,
+        'SBP-PP': SBPPPDesembolsos,
+        'SBP-TLM': SBPTLMAprobadas,
+    }
+
+    def get(self, request, *args, **kwargs):
+        tabla = request.query_params.get('tabla', None)
+        if tabla not in self.model_map:
+            return Response({'error': 'TABLE NOT FOUND'}, status=400)
+
+        model = self.model_map[tabla]
+        periodos = model.objects.values_list('periodo', flat=True).distinct().order_by('-periodo')
+        return Response(periodos)
+
+class DailyMetricsByPeriodViewSet(APIView):
+    model_map = {
+        'BBVA-TLM': BBVATLMFormalizadas,
+        'BBVA-WEB': BBVAWebFormalizadas,
+        'BBVA-PP': BBVAPPDesembolsos,
+        'SBP-PP': SBPPPDesembolsos,
+        'SBP-TLM': SBPTLMAprobadas,
+    }
+
+    def get(self, request, *args, **kwargs):
+        tabla = request.query_params.get('tabla', None)
+        subcampana_id = request.query_params.get('subcampana_id', None)
+        periodo = request.query_params.get('periodo', None)
+
+        if tabla not in self.model_map:
+            return Response({'error': 'TABLE NOT FOUND'}, status=400)
+
+        model = self.model_map[tabla]
+
+        queryset = model.objects.filter(periodo=periodo)
+        
+        subcampana = Subcampana.objects.get(id=subcampana_id) if subcampana_id else None
+        subcampana_data = {
+            'meta': subcampana.meta if subcampana else None,
+            'monto_meta': subcampana.monto_meta if subcampana else None,
+        }
+
+        if subcampana_data['meta'] == 'mount':
+            grouped_data = queryset.values('fecha').annotate(
+                total_tarjetas=Sum('monto_desembolso')
+            ).order_by('fecha')
+        else:
+            grouped_data = queryset.values('fecha').annotate(
+                total_tarjetas=Count('id')
+            ).order_by('fecha')
+
+        data = [
+            {
+                'date': entry['fecha'],
+                'total_tarjetas': round(entry['total_tarjetas'], 2) if isinstance(entry['total_tarjetas'], float) else entry['total_tarjetas']
+            }
+            for entry in grouped_data
+        ]
+
+        return Response(data)
+    
+
+class PruebaViewSet(APIView):
+    model_map = {
+        'BBVA-TLM': BBVATLMFormalizadas,
+        'BBVA-WEB': BBVAWebFormalizadas,
+        'BBVA-PP': BBVAPPDesembolsos,
+        'SBP-PP': SBPPPDesembolsos,
+        'SBP-TLM': SBPTLMAprobadas,
+    }
+
+    def get(self, request, *args, **kwargs):
+        tabla = request.query_params.get('tabla', None)
+        subcampana_id = request.query_params.get('subcampana_id', None)
+        periodo = request.query_params.get('periodo', None)
+
+        if tabla not in self.model_map:
+            return Response({'error': 'TABLE NOT FOUND'}, status=400)
+
+        model = self.model_map[tabla]
+
+        # Obtener datos del periodo actual
+        queryset_current = model.objects.filter(periodo=periodo)
+        
+        subcampana = Subcampana.objects.get(id=subcampana_id) if subcampana_id else None
+        subcampana_data = {
+            'meta': subcampana.meta if subcampana else None,
+            'monto_meta': subcampana.monto_meta if subcampana else None,
+        }
+
+        if subcampana_data['meta'] == 'mount':
+            grouped_data_current = queryset_current.values('fecha').annotate(
+                total_tarjetas=Sum('monto_desembolso')
+            ).order_by('fecha')
+        else:
+            grouped_data_current = queryset_current.values('fecha').annotate(
+                total_tarjetas=Count('id')
+            ).order_by('fecha')
+
+        # Obtener datos del periodo anterior
+        previous_period = (datetime.strptime(periodo, '%Y-%m') - relativedelta(months=1)).strftime('%Y-%m')
+        queryset_previous = model.objects.filter(periodo=previous_period)
+        
+        if subcampana_data['meta'] == 'mount':
+            grouped_data_previous = queryset_previous.values('fecha').annotate(
+                total_tarjetas=Sum('monto_desembolso')
+            ).order_by('fecha')
+        else:
+            grouped_data_previous = queryset_previous.values('fecha').annotate(
+                total_tarjetas=Count('id')
+            ).order_by('fecha')
+
+        # Transformar datos a formato deseado
+        data_current = {
+            entry['fecha']: round(entry['total_tarjetas'], 2) if isinstance(entry['total_tarjetas'], float) else entry['total_tarjetas']
+            for entry in grouped_data_current
+        }
+
+        data_previous = {
+            entry['fecha']: round(entry['total_tarjetas'], 2) if isinstance(entry['total_tarjetas'], float) else entry['total_tarjetas']
+            for entry in grouped_data_previous
+        }
+
+        # Generar todos los días entre el primer y el último día de los datos
+        all_dates = sorted(set(data_current.keys()) | set(data_previous.keys()))
+
+        # Combinar datos actuales y anteriores
+        combined_data = [
+            {
+                'date': date,
+                'tarjetas_del_mes': data_current.get(date, 0),
+                'tarjetas_del_mes_anterior': data_previous.get(date, 0),
+            }
+            for date in all_dates
+        ]
+
+        return Response(combined_data)

@@ -5,6 +5,7 @@ import { MetricBySubcampana } from "../card-campanas/MetricBySubcampana";
 import { startOfDay, endOfDay } from "date-fns";
 import { DateRangePicker } from "@tremor/react";
 import { BarCharCampana } from "./BarCharCampana";
+import { LineCharCampana } from "./LineCharCampana";
 export function CampanaView() {
   const { id } = useParams();
 
@@ -42,9 +43,12 @@ export function CampanaView() {
           date_e = {dateValue.to}
         />
       </div>
-      <div>
+      <div className="mb-5">
       <BarCharCampana subcampanaId={subcampana.id}
           nombre={subcampana.nombre}></BarCharCampana>
+      </div>
+      <div>
+        <LineCharCampana campana={subcampana.nombre} id={subcampana.id}/>
       </div>
     </div>
   );
