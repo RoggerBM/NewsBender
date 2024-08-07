@@ -2,19 +2,25 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getSubcampanaById } from "../../api/subcampanas.api";
 import { MetricBySubcampana } from "../card-campanas/MetricBySubcampana";
-import { startOfDay, endOfDay,startOfMonth } from "date-fns";
+import { parse, endOfDay,startOfMonth } from "date-fns";
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 import { DateRangePicker } from "@tremor/react";
 import { BarCharCampana } from "./BarCharCampana";
 import { LineCharCampana } from "./LineCharCampana";
 import { SliderView } from "./SliderView";
 export function CampanaView() {
+  const timeZone = 'America/Lima';
+  const today = new Date();
+  const localNow = toZonedTime(today, timeZone);
+  const formattedNow = formatInTimeZone(localNow, timeZone, 'yyyy-MM-dd HH:mm:ss');
+  const to = parse(formattedNow, 'yyyy-MM-dd HH:mm:ss', new Date());
+
   const { id } = useParams();
 
   const [subcampana, setSubcampana] = useState(id);
-  const today = new Date();
   const [dateValue, setDateValue] = useState({
     from: startOfMonth(today),
-    to: endOfDay(today),
+    to: to,
   });
   useEffect(() => {
     async function loadSubcampana() {

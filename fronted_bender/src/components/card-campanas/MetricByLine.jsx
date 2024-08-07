@@ -6,7 +6,7 @@ export function MetricByLine({
   metricaFinal = 0.0,
   porcentaje = 0.0,
 }) {
-  const porcentajeInteger = Math.round(porcentaje); // Puedes usar Math.floor o Math.ceil si prefieres
+  const porcentajeInteger = Math.round(porcentaje); 
   const restantePercentage = 100 - porcentaje;
 
   return (

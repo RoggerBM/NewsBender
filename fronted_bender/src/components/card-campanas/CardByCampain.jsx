@@ -3,7 +3,7 @@ import { DatePicker, DateRangePicker } from "@tremor/react";
 import { useEffect, useState } from "react";
 import { getSubcampanasByCampana } from "../../api/campanas.api";
 import { MetricBySubcampana } from "./MetricBySubcampana";
-import { startOfDay,format , endOfDay,startOfMonth,addDays,subDays } from "date-fns";
+import { parse,startOfDay,format , endOfDay,startOfMonth,addDays,subDays,subHours } from "date-fns";
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 
 
@@ -14,18 +14,20 @@ export function CardByCampain({
 }) {
   const timeZone = 'America/Lima';
   const today = new Date();
-  const from = startOfMonth(today);
   const localNow = toZonedTime(today, timeZone);
-  const localFrom = toZonedTime(from, timeZone);
   const formattedNow = formatInTimeZone(localNow, timeZone, 'yyyy-MM-dd HH:mm:ss');
+  const to = parse(formattedNow, 'yyyy-MM-dd HH:mm:ss', new Date());
 
   const [subcampanas, setSubcampanas] = useState([]);
   const [dateValue, setDateValue] = useState({
     from: startOfMonth(today),
-    to: endOfDay(today)
+    to: to
   });
-  console.log("HORA LOCAL",localFrom);
-  console.log("HORA FINAL:", formattedNow);
+  console.log("HORA LOCAL",startOfMonth(today));
+  console.log("HORA FINAL:", to);
+  console.log("ISO DATE inicial",startOfMonth(today).toISOString());
+  console.log("ISO DATE final",to.toISOString());
+
   useEffect(() => {
     async function loadSubcampanas() {
       const res = await getSubcampanasByCampana(campanaId);

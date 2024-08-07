@@ -87,7 +87,8 @@ class MetricasViewSet(APIView):
         queryset = model.objects.all()
 
         if start_date:
-            start_date = parse_datetime(start_date).date()  
+            start_date = parse_datetime(start_date).date()
+            start_date = start_date - timedelta(days=1)
             queryset = queryset.filter(fecha__gte=start_date)
         if end_date:
             end_date = parse_datetime(end_date).date()  # Usar solo la fecha
@@ -113,7 +114,7 @@ class MetricasViewSet(APIView):
             total_tarjetas = queryset.count()
             titulo = "Tarjetas Formalizadas"
 
-        month_days = calendar.monthrange(start_date.year, start_date.month)[1]
+        month_days = calendar.monthrange(end_date.year, end_date.month)[1]
         print("DIAS DEL MES SELECCIONADO:",month_days)
         meta_per_day = subcampana_data["monto_meta"]/month_days
         dia = end_date.day

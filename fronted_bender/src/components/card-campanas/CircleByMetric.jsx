@@ -35,7 +35,7 @@ export function CircleByMetric({
           </div>
           <Legend
             className="mt-1"
-            categories={["Valor del día","Restante", "Meta del día"]}
+            categories={["Valor acumulado","Restante", "Meta del día"]}
             colors={isNegative ? ["rose","amber", "blue"] : ["emerald","amber", "blue"]}
           />
         </div>
