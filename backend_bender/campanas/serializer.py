@@ -50,6 +50,7 @@ class MetricasSerializer(serializers.Serializer):
     percent = serializers.FloatField()
     total = serializers.FloatField()
     titulo = serializers.CharField()
+    restante = serializers.CharField()
 
 class PeriodoMetricasSerializer(serializers.Serializer):
     periodo = serializers.CharField()

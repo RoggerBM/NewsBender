@@ -7,6 +7,7 @@ export function CircleByMetric({
   percent = 200,
   value_min = "0.0",
   value_max = "100.0",
+  restante = '0.0'
 }) {
   const isNegative = parseFloat(percent) < 0 ? true : false;
 
@@ -29,12 +30,13 @@ export function CircleByMetric({
             >
               {value_min}
             </BadgeDelta>
+            <BadgeDelta deltaType="unchanged">{restante}</BadgeDelta>
             <Badge>{value_max}</Badge>
           </div>
           <Legend
             className="mt-1"
-            categories={["Valor del día", "Meta del día"]}
-            colors={isNegative ? ["rose", "blue"] : ["emerald", "blue"]}
+            categories={["Valor del día","Restante", "Meta del día"]}
+            colors={isNegative ? ["rose","amber", "blue"] : ["emerald","amber", "blue"]}
           />
         </div>
       </div>

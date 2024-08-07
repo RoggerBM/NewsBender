@@ -3,21 +3,29 @@ import { DatePicker, DateRangePicker } from "@tremor/react";
 import { useEffect, useState } from "react";
 import { getSubcampanasByCampana } from "../../api/campanas.api";
 import { MetricBySubcampana } from "./MetricBySubcampana";
-import { startOfDay, endOfDay } from "date-fns";
+import { startOfDay,format , endOfDay,startOfMonth,addDays,subDays } from "date-fns";
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+
 
 export function CardByCampain({
   campana = "Lorem, ipsum.",
   img = "/vite.svg",
   campanaId,
 }) {
+  const timeZone = 'America/Lima';
   const today = new Date();
+  const from = startOfMonth(today);
+  const localNow = toZonedTime(today, timeZone);
+  const localFrom = toZonedTime(from, timeZone);
+  const formattedNow = formatInTimeZone(localNow, timeZone, 'yyyy-MM-dd HH:mm:ss');
 
   const [subcampanas, setSubcampanas] = useState([]);
   const [dateValue, setDateValue] = useState({
-    from: startOfDay(today),
-    to: endOfDay(today),
+    from: startOfMonth(today),
+    to: endOfDay(today)
   });
-
+  console.log("HORA LOCAL",localFrom);
+  console.log("HORA FINAL:", formattedNow);
   useEffect(() => {
     async function loadSubcampanas() {
       const res = await getSubcampanasByCampana(campanaId);

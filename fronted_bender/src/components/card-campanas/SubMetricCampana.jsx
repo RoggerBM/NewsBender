@@ -12,16 +12,9 @@ export function SubMetricCampana({
   meta = '0.00',
   percent = '0.0',
   total = '0.0',
-  graph = true
+  graph = true,
+  restante = '0.0'
 }) {
-  const tixxxtle =
-    tipo === "mount"
-      ? "Monto Desembolsado"
-      : tipo === "count"
-      ? "Tarjetas Formalizadas"
-      : title;
-
-
   const formattedValue = tipo === "mount" ? `S./ ${value}` : value;
   const formattedMax = tipo === "mount" ? `S./ ${meta_day}` : meta_day;
   const formatMeta = tipo === "mount" ? `S./ ${meta}` : meta;
@@ -30,7 +23,7 @@ export function SubMetricCampana({
       <h2 className="text-xs font-semibold text-blue-500 mb-1">{title}</h2>
       <div className="flex justify-center items-center mt-2">
         {graph ?(
-          <CircleByMetric percent={val2} value_min={formattedValue} value_max={formattedMax}/>
+          <CircleByMetric percent={val2} value_min={formattedValue} value_max={formattedMax} restante={restante}/>
         ):(
           <MetricByLine metricaInicial={formattedValue} metricaFinal={formatMeta} porcentaje={percent}/>
         )}

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { BarChart } from "@tremor/react";
 import { getPeriodos } from "../../api/metrics.api";
+import { SliderView } from "./SliderView";
 
 const dataFormatter = (number) =>
   Intl.NumberFormat("us").format(number).toString();
 
-export function BarCharCampana({ subcampanaId, nombre }) {
+export function BarCharCampana({ subcampanaId, nombre,date_i,date_e }) {
   const [chartdata, setChartdata] = useState([]);
+
   useEffect(() => {
     const fetchPeriodos = async () => {
       try {

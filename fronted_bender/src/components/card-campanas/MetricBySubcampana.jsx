@@ -37,6 +37,7 @@ export function MetricBySubcampana({
             val2={metricas.val2}
             meta_day={metricas.meta_day}
             graph={true}
+            restante={metricas.restante}
           />
         ) : (
           <div>No data available</div>

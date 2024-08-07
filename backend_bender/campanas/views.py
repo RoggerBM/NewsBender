@@ -9,6 +9,7 @@ import calendar
 from django.db.models import Sum,Count
 from django.http import JsonResponse
 from dateutil.relativedelta import relativedelta
+from django.db.models.functions import ExtractDay, TruncMonth
 
 def format_number(number):
     if abs(number) >= 1_000_000:
@@ -84,11 +85,9 @@ class MetricasViewSet(APIView):
         
         
         queryset = model.objects.all()
-        
+
         if start_date:
-            start_date = parse_datetime(start_date).date()  # Usar solo la fecha
-            start_date = start_date - timedelta(days=1)
-            print(f"Start Date Parsed: {start_date}")  # Depuración
+            start_date = parse_datetime(start_date).date()  
             queryset = queryset.filter(fecha__gte=start_date)
         if end_date:
             end_date = parse_datetime(end_date).date()  # Usar solo la fecha
@@ -100,7 +99,7 @@ class MetricasViewSet(APIView):
             queryset = queryset.filter(subcampaña_id=subcampana_id)
         print(f"Queryset SQL: {queryset.query}")
 
-        
+
         subcampana = Subcampana.objects.get(id=subcampana_id) if subcampana_id else None
         subcampana_data = {
             'meta': subcampana.meta if subcampana else None,
@@ -114,7 +113,7 @@ class MetricasViewSet(APIView):
             total_tarjetas = queryset.count()
             titulo = "Tarjetas Formalizadas"
 
-        month_days = calendar.monthrange(end_date.year, end_date.month)[1]
+        month_days = calendar.monthrange(start_date.year, start_date.month)[1]
         print("DIAS DEL MES SELECCIONADO:",month_days)
         meta_per_day = subcampana_data["monto_meta"]/month_days
         dia = end_date.day
@@ -123,7 +122,7 @@ class MetricasViewSet(APIView):
         print("META DEL DIA",meta_day)
         val1 = total_tarjetas - meta_day
         print("VALOR 1: ",val1)
-        val2 =((total_tarjetas/meta_day) -1) * 100
+        val2 =((total_tarjetas/meta_day)) * 100
         val2 = round(val2,2)
         percent = (total_tarjetas/subcampana_data['monto_meta'])*100
         percent = round(percent,2)
@@ -131,6 +130,8 @@ class MetricasViewSet(APIView):
         formatted_v_day = format_number_by_value(meta_day)
         formatted_val1 = format_number(val1)
         formatted_meta = format_number_by_value(subcampana_data["monto_meta"])
+        tarjetas_restantes = meta_day - total_tarjetas
+        formatted_restante = format_number(tarjetas_restantes)
         data = {
             'total_tarjetas':formatted_tarjet,
             'meta': formatted_meta,
@@ -142,7 +143,8 @@ class MetricasViewSet(APIView):
             'val2': val2,
             'percent': percent,
             'total':total_tarjetas,
-            'titulo':titulo
+            'titulo':titulo,
+            'restante':formatted_restante
         }
         serializer = MetricasSerializer(data)
         return Response(serializer.data)
@@ -157,15 +159,21 @@ class PeriodoMetricasViewSet(APIView):
     }
 
     def get(self, request, *args, **kwargs):
-        tabla = request.query_params.get('tabla', None)
 
+        tabla = request.query_params.get('tabla', None)
         subcampana_id = request.query_params.get('subcampana', None)
+        start_day = request.query_params.get('start_day', None)
+        end_day = request.query_params.get('end_day', None)
+
 
         if tabla not in self.model_map:
             return Response({'error': 'TABLE NOT FOUND'}, status=400)
         model = self.model_map[tabla]
 
         queryset = model.objects.all()
+        print("INICIO DE DIA:",start_day)
+        print("DIA FIN:", end_day)
+        
 
         if subcampana_id:
             queryset = queryset.filter(subcampaña_id=subcampana_id)
@@ -184,7 +192,7 @@ class PeriodoMetricasViewSet(APIView):
             grouped_data = queryset.values('periodo').annotate(
                 total_tarjetas=Count('id')
             ).order_by('periodo')
-
+       
         results = []
         for data in grouped_data:
             periodo = data['periodo']
@@ -196,7 +204,6 @@ class PeriodoMetricasViewSet(APIView):
 
         serializer = PeriodoMetricasSerializer(results, many=True)
         return Response(serializer.data)
-    
 class PeriodsViewSet(APIView):
     model_map = {
         'BBVA-TLM': BBVATLMFormalizadas,
@@ -337,3 +344,4 @@ class PruebaViewSet(APIView):
         ]
 
         return Response(combined_data)
+

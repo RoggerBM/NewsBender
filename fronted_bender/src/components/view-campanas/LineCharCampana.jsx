@@ -92,7 +92,7 @@ export function LineCharCampana({ campana,id }) {
         data={chartData}
         index="date"
         categories={["total_tarjetas"]}
-        colors={["indigo"]}
+        colors={["cyan"]}
         valueFormatter={dataFormatter}
         yAxisWidth={60}
         onValueChange={(v) => console.log(v)}
