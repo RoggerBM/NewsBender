@@ -4,10 +4,11 @@ import { getPeriodos } from "../../api/metrics.api";
 import { SliderView } from "./SliderView";
 
 const dataFormatter = (number) =>
-  Intl.NumberFormat("us").format(number).toString();
+  `S/.${Intl.NumberFormat("us").format(number).toString()}`;
 
-export function BarCharCampana({ subcampanaId, nombre,date_i,date_e }) {
+export function BarCharCampana({ subcampanaId, nombre,date_i,date_e,tipo }) {
   const [chartdata, setChartdata] = useState([]);
+  const isTrue = tipo === 'mount' ? true : false;
 
   useEffect(() => {
     const fetchPeriodos = async () => {
@@ -24,7 +25,7 @@ export function BarCharCampana({ subcampanaId, nombre,date_i,date_e }) {
     };
 
     fetchPeriodos();
-  }, [nombre, subcampanaId]); //
+  }, [nombre, subcampanaId]);
 
   return (
     <div className="border border-slate-200	 rounded-lg p-4 bg-white dark:bg-slate-800">
@@ -37,7 +38,7 @@ export function BarCharCampana({ subcampanaId, nombre,date_i,date_e }) {
         index="name"
         categories={["Total Tarjetas"]}
         colors={["emerald"]}
-        valueFormatter={dataFormatter}
+        valueFormatter={isTrue ? dataFormatter : undefined}        
         yAxisWidth={48}
       />
     </div>

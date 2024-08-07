@@ -261,7 +261,7 @@ class DailyMetricsByPeriodViewSet(APIView):
 
         data = [
             {
-                'date': entry['fecha'],
+                'date': entry['fecha'].strftime('%d/%m/%y'),
                 'total_tarjetas': round(entry['total_tarjetas'], 2) if isinstance(entry['total_tarjetas'], float) else entry['total_tarjetas']
             }
             for entry in grouped_data

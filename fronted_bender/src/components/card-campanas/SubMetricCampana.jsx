@@ -18,12 +18,13 @@ export function SubMetricCampana({
   const formattedValue = tipo === "mount" ? `S./ ${value}` : value;
   const formattedMax = tipo === "mount" ? `S./ ${meta_day}` : meta_day;
   const formatMeta = tipo === "mount" ? `S./ ${meta}` : meta;
+  const formatRestante = tipo === "mount" ? `S./ ${restante}` : restante;
   return (
     <div className="border border-slate-200 rounded-lg p-6 dark:border-cyan-200 flex flex-col bg-white dark:bg-slate-800 shadow-md flex-grow min-w-0 cursor-grab">
       <h2 className="text-xs font-semibold text-blue-500 mb-1">{title}</h2>
       <div className="flex justify-center items-center mt-2">
         {graph ?(
-          <CircleByMetric percent={val2} value_min={formattedValue} value_max={formattedMax} restante={restante}/>
+          <CircleByMetric percent={val2} value_min={formattedValue} value_max={formattedMax} restante={formatRestante}/>
         ):(
           <MetricByLine metricaInicial={formattedValue} metricaFinal={formatMeta} porcentaje={percent}/>
         )}

@@ -58,10 +58,11 @@ export function CampanaView() {
           nombre={subcampana.nombre}
           date_i={dateValue.from}
           date_e={dateValue.from}
+          tipo = {subcampana.meta}
         ></BarCharCampana>
       </div>
       <div>
-        <LineCharCampana campana={subcampana.nombre} id={subcampana.id} />
+        <LineCharCampana campana={subcampana.nombre} id={subcampana.id} tipo={subcampana.meta}/>
       </div>
     </div>
   );

@@ -2,81 +2,26 @@ import React, { useEffect, useState } from "react";
 import { LineChart } from "@tremor/react";
 import { SelectByPeriodo } from "./SelectByPeriodo";
 import { getDayMetrics } from "../../api/periods.api";
-const chartdata = [
-  {
-    date: "Jan 22",
-    SolarPanels: 2890,
-    Inverters: 2338,
-  },
-  {
-    date: "Feb 22",
-    SolarPanels: 2756,
-    Inverters: 2103,
-  },
-  {
-    date: "Mar 22",
-    SolarPanels: 3322,
-    Inverters: 2194,
-  },
-  {
-    date: "Apr 22",
-    SolarPanels: 3470,
-    Inverters: 2108,
-  },
-  {
-    date: "May 22",
-    SolarPanels: 3475,
-    Inverters: 1812,
-  },
-  {
-    date: "Jun 22",
-    SolarPanels: 3129,
-    Inverters: 1726,
-  },
-  {
-    date: "Jul 22",
-    SolarPanels: 3490,
-    Inverters: 1982,
-  },
-  {
-    date: "Aug 22",
-    SolarPanels: 2903,
-    Inverters: 2012,
-  },
-  {
-    date: "Sep 22",
-    SolarPanels: 2643,
-    Inverters: 2342,
-  },
-  {
-    date: "Oct 22",
-    SolarPanels: 2837,
-    Inverters: 2473,
-  },
-  {
-    date: "Nov 22",
-    SolarPanels: 2954,
-    Inverters: 3848,
-  },
-  {
-    date: "Dec 22",
-    SolarPanels: 3239,
-    Inverters: 3736,
-  },
-];
+
 
 const dataFormatter = (number) =>
-  `$${Intl.NumberFormat("us").format(number).toString()}`;
+  `S/.${Intl.NumberFormat("us").format(number).toString()}`;
 
-export function LineCharCampana({ campana,id }) {
+export function LineCharCampana({ campana,id,tipo }) {
   const [chartData, setChartData] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState("");
-
+  console.log("tipo",tipo);
+  const isTrue = tipo === 'mount' ? true : false;
   useEffect(() => {
     async function fetchMetrics() {
       if (campana && selectedPeriod) {
         const res = await getDayMetrics(campana, id, selectedPeriod);
-        setChartData(res.data);
+        const transformedData = res.data.map(item => ({
+          date: item.date,
+          'Valor del día': item.total_tarjetas
+        }));
+        
+        setChartData(transformedData);
       }
     }
     fetchMetrics();
@@ -87,16 +32,17 @@ export function LineCharCampana({ campana,id }) {
         Evolución de ventas por dias
       </h2>
       <SelectByPeriodo name={campana} onPeriodChange={setSelectedPeriod} />
+      <div className="">
       <LineChart
         className="h-80"
         data={chartData}
         index="date"
-        categories={["total_tarjetas"]}
+        categories={["Valor del día"]}
         colors={["cyan"]}
-        valueFormatter={dataFormatter}
-        yAxisWidth={60}
+        valueFormatter={isTrue ? dataFormatter : undefined}
         onValueChange={(v) => console.log(v)}
       />
+      </div>
     </div>
   );
 }
