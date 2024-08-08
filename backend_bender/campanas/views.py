@@ -127,10 +127,11 @@ class MetricasViewSet(APIView):
         val2 = round(val2,2)
         percent = (total_tarjetas/subcampana_data['monto_meta'])*100
         percent = round(percent,2)
-        formatted_tarjet = format_number_by_value(total_tarjetas)
-        formatted_v_day = format_number_by_value(meta_day)
+        formatted_tarjet = format_number(total_tarjetas)
+        formatted_v_day = format_number(meta_day)
         formatted_val1 = format_number(val1)
         formatted_meta = format_number_by_value(subcampana_data["monto_meta"])
+        frm_val2 = format_number(val2)
         tarjetas_restantes = meta_day - total_tarjetas
         formatted_restante = format_number(tarjetas_restantes)
         data = {
@@ -141,7 +142,7 @@ class MetricasViewSet(APIView):
             'meta_per_day': meta_per_day,
             'meta_day' : formatted_v_day,
             'val1' : formatted_val1,
-            'val2': val2,
+            'val2': frm_val2,
             'percent': percent,
             'total':total_tarjetas,
             'titulo':titulo,

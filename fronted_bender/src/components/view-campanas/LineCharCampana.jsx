@@ -38,7 +38,7 @@ export function LineCharCampana({ campana,id,tipo }) {
         data={chartData}
         index="date"
         categories={["Valor del día"]}
-        colors={["cyan"]}
+        colors={["amber"]}
         valueFormatter={isTrue ? dataFormatter : undefined}
         onValueChange={(v) => console.log(v)}
       />
