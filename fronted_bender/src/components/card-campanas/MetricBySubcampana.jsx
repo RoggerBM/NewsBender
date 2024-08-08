@@ -3,6 +3,16 @@ import { SubMetricCampana } from "./SubMetricCampana";
 import { getMetricas } from "../../api/metrics.api";
 import { CardForMont } from "./CardForMont";
 import { getDayMetrics } from "../../api/periods.api";
+const formatDateToYearMonth = (date) => {
+  if (!(date instanceof Date)) {
+    console.error("Fecha no es un objeto Date:", date);
+    return null;
+  }
+  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Asegurar que el mes tenga dos dígitos
+  return `${year}-${month}`;
+};
 export function MetricBySubcampana({
   nombre = "subcamapana",
   subcampana_id,
@@ -12,6 +22,8 @@ export function MetricBySubcampana({
 }) {
   const [metricas, setMetricas] = useState([]);
   const [chartData, setChartData] = useState([]);
+  const [period, setPeriod] = useState(formatDateToYearMonth(date_e));
+
   useEffect(() => {
     async function fetchMetricas() {
       const response = await getMetricas(
@@ -21,20 +33,18 @@ export function MetricBySubcampana({
         date_i,
         date_e
       );
+      setPeriod(formatDateToYearMonth(date_e));
       setMetricas(response.data);
     }
     fetchMetricas();
   }, [nombre, campanaId, subcampana_id, date_i, date_e]);
-
   useEffect(() => {
     async function fetchChart() {
-        const res = await getDayMetrics(nombre, campanaId, "2024-08"
-
-        );
-        setChartData(res.data)
-      } fetchChart();
-    }, [nombre,campanaId,"2024-08"]);
-  console.log(chartData);
+      const res = await getDayMetrics(nombre, subcampana_id, period);
+      setChartData(res.data);
+    }
+    fetchChart();
+  }, [nombre, campanaId, period]);
   return (
     <div className="flex flex-col">
       <h2 className="text-xs font-semibold mb-2">{nombre}</h2>
@@ -63,7 +73,7 @@ export function MetricBySubcampana({
           total={metricas.total}
           graph={false}
         />
-        <CardForMont title= "Avance de ventas" data={chartData}
+        <CardForMont title="Avance de ventas" data={chartData} tipo={metricas.tipo}
         ></CardForMont>
       </div>
     </div>
